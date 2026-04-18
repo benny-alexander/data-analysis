@@ -132,9 +132,21 @@ export async function POST(request: Request): Promise<NextResponse> {
       }),
     );
   } catch (err) {
-    console.error("Blob upload error:", err);
+    // Surface the real error while we're debugging the launch-day path.
+    // The front-end shows this in the red error banner.
+    const message = err instanceof Error ? err.message : String(err);
+    const name = err instanceof Error ? err.name : "UnknownError";
+    console.error("Blob upload error:", {
+      name,
+      message,
+      stack: err instanceof Error ? err.stack : undefined,
+      tokenPrefix: blobToken ? blobToken.slice(0, 20) + "..." : "missing",
+    });
     return NextResponse.json(
-      { error: "Upload failed. Please try again in a minute." },
+      {
+        error: `Blob upload failed — ${name}: ${message}`,
+        debug: { name, message },
+      },
       { status: 500 },
     );
   }
