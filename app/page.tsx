@@ -21,12 +21,12 @@ export default function Home() {
       {/* Hero — tight, above the fold */}
       <section className="mx-auto max-w-3xl px-6 pt-12 pb-10 text-center">
         <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight">
-          Your watch has been telling you why you&rsquo;re tired.
-          <span className="block text-mute mt-2">You just can&rsquo;t see it.</span>
+          There&rsquo;s a pattern in your data that&rsquo;s draining you.
+          <span className="block text-mute mt-2">I&rsquo;ll find it.</span>
         </h1>
         <p className="mt-6 text-lg text-ink/80 max-w-xl mx-auto">
-          Drop your Oura, Garmin, Apple Watch, WHOOP or Strava export below.
-          I&rsquo;ll read it personally and email you back with the pattern that matters.
+          Drop your data. I&rsquo;ll send you the insight that gets you closer
+          to your goal.
         </p>
       </section>
 

@@ -2,6 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
+import posthog from "posthog-js";
+
+// Tiny helper — safe to call before or without PostHog init.
+function track(event: string, props?: Record<string, unknown>) {
+  if (typeof window === "undefined") return;
+  try {
+    posthog.capture(event, props);
+  } catch {
+    /* ignore — analytics must never break the form */
+  }
+}
 
 // Server-side /api/submit is bounded by Vercel's ~4.5 MB serverless body
 // limit. Keep the client ceilings a touch below that so people see the
@@ -72,18 +83,21 @@ export default function UploadForm() {
 
         // single-file size check
         if (f.size > MAX_FILE_BYTES) {
+          track("oversize_blocked", { reason: "single", size_mb: +(f.size / 1024 / 1024).toFixed(2) });
           setOversize({ file: f, reason: "single" });
           return;
         }
 
         // count check
         if (current.length >= MAX_FILES) {
+          track("oversize_blocked", { reason: "count" });
           setOversize({ file: f, reason: "count" });
           return;
         }
 
         // total size check
         if (runningTotal + f.size > MAX_TOTAL_BYTES) {
+          track("oversize_blocked", { reason: "total", size_mb: +((runningTotal + f.size) / 1024 / 1024).toFixed(2) });
           setOversize({ file: f, reason: "total" });
           return;
         }
@@ -91,6 +105,14 @@ export default function UploadForm() {
         current.push(f);
         existingKeys.add(fileKey(f));
         runningTotal += f.size;
+      }
+
+      const added = current.length - files.length;
+      if (added > 0) {
+        track("file_added", {
+          files_total: current.length,
+          total_mb: +(runningTotal / 1024 / 1024).toFixed(2),
+        });
       }
 
       setFiles(current);
@@ -124,6 +146,10 @@ export default function UploadForm() {
       setError("Pick at least one file first.");
       return;
     }
+    track("step2_reached", {
+      files_count: files.length,
+      total_mb: +(totalBytes / 1024 / 1024).toFixed(2),
+    });
     setStep(2);
   };
 
@@ -159,6 +185,20 @@ export default function UploadForm() {
       );
     if (!consent)
       return setError("Please tick the consent box so I can process your data.");
+
+    track("submit_attempted", {
+      files_count: files.length,
+      total_mb: +(totalBytes / 1024 / 1024).toFixed(2),
+    });
+
+    // Identify the person in PostHog so the session and any future visits
+    // are linked to a real human. We mask inputs in replays — this is the
+    // one place we consciously attach PII, after consent.
+    try {
+      posthog.identify(email, { name: firstName, email });
+    } catch {
+      /* ignore */
+    }
 
     try {
       setStatus("uploading");
@@ -228,15 +268,20 @@ export default function UploadForm() {
       });
 
       setStatus("done");
+      track("submit_succeeded", {
+        files_count: files.length,
+        total_mb: +(totalBytes / 1024 / 1024).toFixed(2),
+      });
       router.push("/success");
     } catch (err) {
       console.error(err);
       setStatus("error");
-      setError(
+      const message =
         err instanceof Error
           ? err.message
-          : "Something went wrong. Try again, or email me directly.",
-      );
+          : "Something went wrong. Try again, or email me directly.";
+      track("submit_failed", { message });
+      setError(message);
     }
   };
 
@@ -289,20 +334,13 @@ export default function UploadForm() {
             </p>
             <p className="mt-3 text-mute">
               or{" "}
-              <span className="underline hidden md:inline">
-                click to choose files
-              </span>
+              <span className="underline hidden md:inline">click to choose</span>
               <span className="underline md:hidden">
                 tap to upload from Files
               </span>
             </p>
             <p className="mt-6 text-xs text-mute">
-              .csv, .xml, .json, .zip &middot; up to 4 MB total &middot; up to{" "}
-              {MAX_FILES} files
-            </p>
-            <p className="mt-2 text-xs text-mute max-w-[24rem]">
-              Larger file (e.g. a full Garmin GDPR export)? I&rsquo;ll route you
-              to WeTransfer — drop it in, I&rsquo;ll still get it.
+              .csv, .xml, .json, .zip &middot; up to 4 MB total
             </p>
             <p className="mt-2 text-xs text-mute md:hidden max-w-[22rem]">
               On iPhone? Your export should be in your Files app (iCloud Drive,
@@ -451,9 +489,6 @@ export default function UploadForm() {
         <h2 className="font-serif text-2xl tracking-tight">
           Where should I send your read?
         </h2>
-        <p className="mt-2 text-sm text-mute">
-          I&rsquo;ll email you within 48 hours. Just a few details.
-        </p>
       </div>
 
       {/* Name + Email */}
@@ -503,8 +538,8 @@ export default function UploadForm() {
           required
         />
         <span>
-          I consent to Ben receiving and analysing this data to send me a
-          personal insight. I understand this is not medical advice.
+          I consent to Ben analysing this data to send me a personal insight.
+          Not medical advice.
         </span>
       </label>
 

@@ -19,12 +19,11 @@ export default function SuccessPage() {
           Got it.
         </h1>
         <p className="mt-6 text-lg text-ink/80">
-          Your data is with me. I&rsquo;ll read it personally and email you back
-          within 48 hours.
+          Your data is with me. I&rsquo;ll email you within 48 hours.
         </p>
         <p className="mt-4 text-sm text-mute">
-          Check your inbox &mdash; sometimes my reply lands in Promotions or Spam
-          the first time.
+          Check Promotions and Spam &mdash; my first reply sometimes lands
+          there.
         </p>
       </section>
 
@@ -64,7 +63,7 @@ export default function SuccessPage() {
           href="/"
           className="text-mute underline underline-offset-4 hover:text-ink text-sm"
         >
-          Back to the home page
+          Back to home
         </Link>
       </section>
     </main>
