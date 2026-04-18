@@ -120,3 +120,4 @@ app/
 ## When you're ready for v2
 
 Revisit `../website-build-plan.md` in this folder. The roadmap there covers: Supabase with private storage and signed URLs, Claude auto-drafting, admin dashboard, Stripe + subscription tiers, and the path to $1M MRR.
+# data-analysis
