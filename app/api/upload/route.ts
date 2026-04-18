@@ -21,18 +21,9 @@ export async function POST(request: Request): Promise<NextResponse> {
         }
 
         return {
-          allowedContentTypes: [
-            "application/zip",
-            "application/x-zip-compressed",
-            "application/json",
-            "application/xml",
-            "text/xml",
-            "text/csv",
-            "text/tab-separated-values",
-            "application/octet-stream",
-            "application/gpx+xml",
-            "application/vnd.ant.fit",
-          ],
+          // No content-type allowlist — browsers send wildly inconsistent
+          // MIME types for the same file extension (especially Safari with
+          // .csv/.fit/.gpx). Path and size limits below are enough of a guard.
           maximumSizeInBytes: 500 * 1024 * 1024, // 500 MB
           addRandomSuffix: true,
           tokenPayload: JSON.stringify({ pathname }),
