@@ -1,11 +1,13 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 
-const MAX_FILE_BYTES = 500 * 1024 * 1024; // 500 MB per file
-const MAX_TOTAL_BYTES = 1.5 * 1024 * 1024 * 1024; // 1.5 GB total
+// Server-side /api/submit is bounded by Vercel's ~4.5 MB serverless body
+// limit. Keep the client ceilings a touch below that so people see the
+// friendly oversize fallback (WeTransfer) instead of a 413 from the server.
+const MAX_FILE_BYTES = 4 * 1024 * 1024; // 4 MB per file
+const MAX_TOTAL_BYTES = 4 * 1024 * 1024; // 4 MB total
 const MAX_FILES = 5;
 
 const ACCEPT =
@@ -160,48 +162,70 @@ export default function UploadForm() {
 
     try {
       setStatus("uploading");
-      const timestamp = Date.now();
 
-      const uploaded = await Promise.all(
-        files.map(async (file) => {
-          const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-          const pathname = `submissions/${timestamp}-${safeName}`;
-          const key = fileKey(file);
-
-          const blob = await upload(pathname, file, {
-            access: "public",
-            handleUploadUrl: "/api/upload",
-            onUploadProgress: (ev) => {
-              setProgress((p) => ({ ...p, [key]: ev.percentage ?? 0 }));
-            },
-          });
-
-          return {
-            url: blob.url,
-            name: file.name,
-            size: file.size,
-          };
-        }),
-      );
-
-      setStatus("submitting");
-      const res = await fetch("/api/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName,
-          email,
-          goal,
-          files: uploaded,
-        }),
-      });
-
-      if (!res.ok) {
-        const { error: msg } = await res
-          .json()
-          .catch(() => ({ error: "Submission failed" }));
-        throw new Error(msg || "Submission failed");
+      // Build one multipart payload — files + contact details.
+      const payload = new FormData();
+      payload.append("firstName", firstName);
+      payload.append("email", email);
+      payload.append("goal", goal);
+      payload.append("consent", "on");
+      for (const file of files) {
+        payload.append("files", file, file.name);
       }
+
+      // Use XHR so we can report real upload progress. fetch() doesn't
+      // expose upload progress events.
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/submit");
+
+        xhr.upload.onprogress = (ev) => {
+          if (!ev.lengthComputable) return;
+          const pct = Math.round((ev.loaded / ev.total) * 100);
+          // Share the same percentage across all chips — the browser
+          // sends them as one multipart body, so they finish together.
+          setProgress(() => {
+            const next: Record<string, number> = {};
+            for (const f of files) next[fileKey(f)] = pct;
+            return next;
+          });
+        };
+
+        xhr.upload.onload = () => {
+          // Upload body finished; server is now processing.
+          setStatus("submitting");
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+            return;
+          }
+          let msg = "Submission failed";
+          try {
+            const body = JSON.parse(xhr.responseText || "{}");
+            if (body && typeof body.error === "string") msg = body.error;
+          } catch {
+            /* ignore */
+          }
+          if (xhr.status === 413) {
+            msg =
+              "Your upload is larger than 4 MB total. Remove a file or use the WeTransfer fallback on the oversize screen.";
+          }
+          reject(new Error(msg));
+        };
+
+        xhr.onerror = () =>
+          reject(
+            new Error(
+              "Network error during upload. Check your connection and try again.",
+            ),
+          );
+        xhr.ontimeout = () =>
+          reject(new Error("Upload timed out. Try again."));
+
+        xhr.send(payload);
+      });
 
       setStatus("done");
       router.push("/success");
@@ -273,8 +297,12 @@ export default function UploadForm() {
               </span>
             </p>
             <p className="mt-6 text-xs text-mute">
-              .zip, .csv, .xml, .json &middot; up to 500 MB per file &middot; up to{" "}
+              .csv, .xml, .json, .zip &middot; up to 4 MB total &middot; up to{" "}
               {MAX_FILES} files
+            </p>
+            <p className="mt-2 text-xs text-mute max-w-[24rem]">
+              Larger file (e.g. a full Garmin GDPR export)? I&rsquo;ll route you
+              to WeTransfer — drop it in, I&rsquo;ll still get it.
             </p>
             <p className="mt-2 text-xs text-mute md:hidden max-w-[22rem]">
               On iPhone? Your export should be in your Files app (iCloud Drive,
@@ -583,16 +611,16 @@ function OversizeBlock({
 
   const headline =
     reason === "single"
-      ? `That file is ${sizeLabel} — a bit big.`
+      ? `That file is ${sizeLabel} — a bit big for the form.`
       : reason === "total"
-        ? `That would push you past 1.5 GB.`
+        ? `That would push you past 4 MB.`
         : `That's more than ${MAX_FILES} files.`;
 
   const explainer =
     reason === "single"
-      ? `My upload limit per file is 500 MB. Garmin and Apple Health exports sometimes come out larger than that.`
+      ? `The form caps uploads at 4 MB per file. Garmin GDPR and Apple Health exports are often much larger than that — WeTransfer handles them easily.`
       : reason === "total"
-        ? `You've already got ${formatBytes(totalBytes)} queued. Combined with this file (${sizeLabel}) it crosses my 1.5 GB upload limit.`
+        ? `You've already got ${formatBytes(totalBytes)} queued. Combined with this file (${sizeLabel}) it crosses the 4 MB form limit.`
         : `I only take ${MAX_FILES} files at a time. Remove one first, or send everything via WeTransfer so I can read it together.`;
 
   const mailSubject = encodeURIComponent("My data export is too big for the form");
