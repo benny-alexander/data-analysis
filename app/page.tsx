@@ -3,8 +3,11 @@ import UploadForm from "./components/UploadForm";
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "The Read";
 const founderName = process.env.NEXT_PUBLIC_FOUNDER_NAME || "Ben";
-// Optional. If set, renders the founder photo in the hero credibility card.
-const founderPhotoUrl = process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "";
+// Defaults to /founder.jpg in the public folder. Set the env var to
+// override (e.g. to a Blob or CDN URL). Leave the file absent and unset
+// the env var to fall back to the initial-in-a-circle placeholder.
+const founderPhotoUrl =
+  process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "/founder.jpg";
 
 const TRACKERS = ["Apple Watch", "Garmin", "WHOOP", "Strava", "Oura"];
 
@@ -114,7 +117,7 @@ export default function Home() {
                 <img
                   src={founderPhotoUrl}
                   alt={founderName}
-                  className="h-24 w-24 md:h-28 md:w-28 rounded-full object-cover border border-line"
+                  className="h-24 w-24 md:h-28 md:w-28 rounded-full object-cover object-top border border-line"
                 />
               ) : (
                 <div className="h-24 w-24 md:h-28 md:w-28 rounded-full bg-accent/10 text-accent flex items-center justify-center font-serif text-3xl border border-accent/20">
@@ -130,11 +133,12 @@ export default function Home() {
                 Made by {founderName}.
               </h3>
               <p className="mt-3 text-ink/80 leading-relaxed">
-                I played professional sport for 11 years. While I was playing,
-                coaches and trainers tracked my data for me. When I retired, I
-                had to learn to read it myself &mdash; and AI is what finally
-                helped me make sense of it. I want to help you do the same, so
-                you can sleep better, feel great, and hit your fitness goals.
+                I&rsquo;m a former Wallabies prop. I played professional rugby
+                for 11 years, and through all of it, coaches and trainers tracked
+                my data for me. When I retired, I had to learn to read it myself
+                &mdash; and AI is what finally helped me make sense of it. I want
+                to help you do the same, so you can sleep better, feel great,
+                and hit your fitness goals.
               </p>
             </div>
           </div>

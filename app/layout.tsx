@@ -8,11 +8,11 @@ const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "The Read";
 export const metadata: Metadata = {
   title: `${siteName} — A personal read of your fitness data`,
   description:
-    "AI finds the patterns in your fitness data so you can sleep better, feel great, and hit your fitness goals. Read by a former pro athlete.",
+    "AI finds the patterns in your fitness data so you can sleep better, feel great, and hit your fitness goals. Read by a former Wallabies prop.",
   openGraph: {
     title: siteName,
     description:
-      "AI finds the patterns in your fitness data so you can sleep better, feel great, and hit your fitness goals. Read by a former pro athlete.",
+      "AI finds the patterns in your fitness data so you can sleep better, feel great, and hit your fitness goals. Read by a former Wallabies prop.",
     type: "website",
   },
 };
