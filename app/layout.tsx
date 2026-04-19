@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: siteName,
     description:
-      "AI finds the patterns in your fitness data. A pro athlete turns them into habit changes — for more energy and your goals.",
+      "AI finds the patterns in your fitness data so you can sleep better and hit your goals. Read by a pro athlete with 20 years of tracked data.",
     type: "website",
   },
 };

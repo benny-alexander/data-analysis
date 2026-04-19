@@ -35,8 +35,8 @@ export default function Home() {
           Find the habit draining your recovery.
         </h1>
         <p className="mt-6 text-lg text-ink/80 max-w-xl mx-auto">
-          AI finds the patterns in your data. I turn them into habit changes
-          &mdash; so you have more energy and hit your fitness goals.
+          AI finds the patterns in your data so you can sleep better and hit
+          your fitness goals.
         </p>
 
         {/* Tracker row — answers "what data?" at a glance */}
@@ -130,12 +130,11 @@ export default function Home() {
                 Made by {founderName}.
               </h3>
               <p className="mt-3 text-ink/80 leading-relaxed">
-                I played professional sport for 11 years in high-performance
-                environments. I&rsquo;ve tracked my own fitness data obsessively
-                the whole way &mdash; and for years I couldn&rsquo;t make sense of
-                it. AI changed that. It reads the noise so I can read the person.
-                I have more energy now than I did when I was playing, and I want
-                to help you find yours.
+                I&rsquo;ve tracked my fitness data for nearly 20 years &mdash; 11
+                as a professional athlete, the rest since retirement. For most
+                of it, I couldn&rsquo;t make sense of what I was seeing. AI is
+                finally helping me with that. I have more energy now than I did
+                when I was playing, and I want to help you find yours.
               </p>
             </div>
           </div>
