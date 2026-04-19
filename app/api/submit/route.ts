@@ -1,25 +1,30 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import { Resend } from "resend";
 
-/**
- * Accepts a multipart/form-data submission (files + contact details),
- * uploads each file to Vercel Blob server-side, then sends the admin
- * notification email via Resend.
- *
- * Server-side upload deliberately bypasses @vercel/blob client-upload,
- * which was failing with CORS/400 from blob.vercel-storage.com in Safari.
- * Trade-off: we're bound by the Vercel serverless body size limit
- * (~4.5 MB on Hobby), so the client-side oversize fallback routes
- * anything larger to WeTransfer.
- */
+// Accepts a JSON submission: contact details plus an array of Blob URLs
+// the browser already uploaded directly to Vercel Blob via /api/upload.
+// No file bodies cross this function, so the 4.5 MB Vercel serverless
+// body limit no longer applies.
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 30;
 
-// Hard server-side ceiling — keep this under Vercel's body limit.
-const MAX_TOTAL_BYTES = 4 * 1024 * 1024; // 4 MB
 const MAX_FILES = 5;
+const MAX_TOTAL_BYTES = 1500 * 1024 * 1024; // 1.5 GB aggregate
+
+type SubmittedFile = {
+  url: string;
+  name: string;
+  size: number;
+};
+
+type SubmitBody = {
+  firstName?: string;
+  email?: string;
+  goal?: string;
+  consent?: boolean;
+  files?: SubmittedFile[];
+};
 
 function escapeHtml(s: string): string {
   return s
@@ -38,26 +43,33 @@ function formatBytes(n: number): string {
   return `${n} B`;
 }
 
-function safeName(name: string): string {
-  return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+// Defence in depth — only accept blob URLs we issued.
+function isVercelBlobUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return u.hostname.endsWith(".public.blob.vercel-storage.com") ||
+      u.hostname.endsWith(".blob.vercel-storage.com");
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
-  let form: FormData;
+  let body: SubmitBody;
   try {
-    form = await request.formData();
-  } catch (err) {
-    console.error("formData parse error:", err);
+    body = (await request.json()) as SubmitBody;
+  } catch {
     return NextResponse.json(
-      { error: "Could not read the upload. Try again, or email Ben directly." },
+      { error: "Could not read the submission. Try again." },
       { status: 400 },
     );
   }
 
-  const firstName = String(form.get("firstName") || "").trim();
-  const email = String(form.get("email") || "").trim();
-  const goal = String(form.get("goal") || "").trim();
-  const consent = String(form.get("consent") || "").trim();
+  const firstName = String(body.firstName || "").trim();
+  const email = String(body.email || "").trim();
+  const goal = String(body.goal || "").trim();
+  const consent = body.consent === true;
+  const files = Array.isArray(body.files) ? body.files : [];
 
   if (!firstName) {
     return NextResponse.json({ error: "Missing first name" }, { status: 400 });
@@ -69,46 +81,52 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "Goal is too short" }, { status: 400 });
   }
   if (!consent) {
-    return NextResponse.json(
-      { error: "Consent is required" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Consent is required" }, { status: 400 });
   }
-
-  // Collect files — field name is "files" (repeated).
-  const rawFiles = form.getAll("files").filter((v): v is File => v instanceof File);
-  if (rawFiles.length === 0) {
+  if (files.length === 0) {
     return NextResponse.json({ error: "No files attached" }, { status: 400 });
   }
-  if (rawFiles.length > MAX_FILES) {
+  if (files.length > MAX_FILES) {
     return NextResponse.json(
       { error: `Too many files (max ${MAX_FILES})` },
       { status: 400 },
     );
   }
 
-  const totalBytes = rawFiles.reduce((s, f) => s + f.size, 0);
+  const cleanFiles: SubmittedFile[] = [];
+  for (const f of files) {
+    if (!f || typeof f.url !== "string" || typeof f.name !== "string" ||
+      typeof f.size !== "number") {
+      return NextResponse.json(
+        { error: "Malformed file entry" },
+        { status: 400 },
+      );
+    }
+    if (!isVercelBlobUrl(f.url)) {
+      return NextResponse.json(
+        { error: "Unexpected upload location" },
+        { status: 400 },
+      );
+    }
+    cleanFiles.push({ url: f.url, name: f.name, size: f.size });
+  }
+
+  const totalBytes = cleanFiles.reduce((s, f) => s + f.size, 0);
   if (totalBytes > MAX_TOTAL_BYTES) {
     return NextResponse.json(
-      {
-        error:
-          "Your upload is larger than 4 MB total. Please use the WeTransfer link on the oversize screen, or email Ben directly.",
-      },
+      { error: "Total upload exceeds 1.5 GB" },
       { status: 413 },
     );
   }
 
-  // Env — fail fast with a clear error
   const adminEmail = process.env.ADMIN_EMAIL;
   const fromEmail = process.env.FROM_EMAIL || "onboarding@resend.dev";
   const resendKey = process.env.RESEND_API_KEY;
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
 
-  if (!adminEmail || !resendKey || !blobToken) {
+  if (!adminEmail || !resendKey) {
     console.error("Missing env vars", {
       hasAdmin: !!adminEmail,
       hasResend: !!resendKey,
-      hasBlob: !!blobToken,
     });
     return NextResponse.json(
       { error: "Server is not configured" },
@@ -116,47 +134,11 @@ export async function POST(request: Request): Promise<NextResponse> {
     );
   }
 
-  // Server-side upload to Vercel Blob
-  const timestamp = Date.now();
-  let uploaded: { url: string; name: string; size: number }[];
-  try {
-    uploaded = await Promise.all(
-      rawFiles.map(async (file) => {
-        const pathname = `submissions/${timestamp}-${safeName(file.name)}`;
-        const blob = await put(pathname, file, {
-          access: "public",
-          addRandomSuffix: true,
-          token: blobToken,
-        });
-        return { url: blob.url, name: file.name, size: file.size };
-      }),
-    );
-  } catch (err) {
-    // Surface the real error while we're debugging the launch-day path.
-    // The front-end shows this in the red error banner.
-    const message = err instanceof Error ? err.message : String(err);
-    const name = err instanceof Error ? err.name : "UnknownError";
-    console.error("Blob upload error:", {
-      name,
-      message,
-      stack: err instanceof Error ? err.stack : undefined,
-      tokenPrefix: blobToken ? blobToken.slice(0, 20) + "..." : "missing",
-    });
-    return NextResponse.json(
-      {
-        error: `Blob upload failed — ${name}: ${message}`,
-        debug: { name, message },
-      },
-      { status: 500 },
-    );
-  }
-
-  // Build the email
   const resend = new Resend(resendKey);
   const fileCountLabel =
-    uploaded.length === 1 ? "1 file" : `${uploaded.length} files`;
+    cleanFiles.length === 1 ? "1 file" : `${cleanFiles.length} files`;
 
-  const fileRowsHtml = uploaded
+  const fileRowsHtml = cleanFiles
     .map(
       (f) => `
         <tr>
@@ -190,7 +172,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     </div>
   `;
 
-  const filesText = uploaded
+  const filesText = cleanFiles
     .map((f) => `- ${f.name} (${formatBytes(f.size)})\n  ${f.url}`)
     .join("\n");
 
@@ -214,23 +196,18 @@ Submitted ${new Date().toISOString()}
       to: adminEmail,
       replyTo: email,
       subject:
-        uploaded.length === 1
+        cleanFiles.length === 1
           ? `New Read submission — ${firstName}`
-          : `New Read submission — ${firstName} (${uploaded.length} files)`,
+          : `New Read submission — ${firstName} (${cleanFiles.length} files)`,
       html,
       text,
     });
-
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Resend error:", error);
-    // Files are already in Blob — don't make the user re-upload just because
-    // email failed. Return a soft-success so the user still gets the success page.
+    // Files are already in Blob — don't make the user re-upload.
     return NextResponse.json(
-      {
-        ok: true,
-        warning: "Uploaded, but notification email failed.",
-      },
+      { ok: true, warning: "Uploaded, but notification email failed." },
       { status: 200 },
     );
   }
