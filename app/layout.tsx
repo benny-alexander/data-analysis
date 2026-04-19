@@ -6,13 +6,13 @@ import Analytics from "./components/Analytics";
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "The Read";
 
 export const metadata: Metadata = {
-  title: `${siteName} — Get a personal read of your fitness data`,
+  title: `${siteName} — A personal read of your fitness data`,
   description:
-    "Upload your Oura, Garmin, Apple Watch, WHOOP or Strava export. Ben reads it personally and emails you the pattern that matters.",
+    "AI finds the patterns in your fitness data so you can sleep better, feel great, and hit your fitness goals. Read by a former pro athlete.",
   openGraph: {
     title: siteName,
     description:
-      "AI finds the patterns in your fitness data so you can sleep better and hit your goals. Read by a pro athlete with 20 years of tracked data.",
+      "AI finds the patterns in your fitness data so you can sleep better, feel great, and hit your fitness goals. Read by a former pro athlete.",
     type: "website",
   },
 };

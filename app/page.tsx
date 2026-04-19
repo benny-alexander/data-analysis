@@ -93,7 +93,7 @@ export default function Home() {
             <Step
               n={2}
               title="AI analyses it against your goals"
-              body="An LLM reads every night, every workout and every session — looking for the patterns that matter for what you&rsquo;re trying to achieve."
+              body="AI reads every night, every workout and every session — looking for the patterns that matter for what you&rsquo;re trying to achieve."
             />
             <Step
               n={3}
@@ -130,11 +130,11 @@ export default function Home() {
                 Made by {founderName}.
               </h3>
               <p className="mt-3 text-ink/80 leading-relaxed">
-                I&rsquo;ve tracked my fitness data for nearly 20 years &mdash; 11
-                as a professional athlete, the rest since retirement. For most
-                of it, I couldn&rsquo;t make sense of what I was seeing. AI is
-                finally helping me with that. I have more energy now than I did
-                when I was playing, and I want to help you find yours.
+                I played professional sport for 11 years. While I was playing,
+                coaches and trainers tracked my data for me. When I retired, I
+                had to learn to read it myself &mdash; and AI is what finally
+                helped me make sense of it. I want to help you do the same, so
+                you can sleep better, feel great, and hit your fitness goals.
               </p>
             </div>
           </div>
