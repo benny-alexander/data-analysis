@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: siteName,
     description:
-      "There's a pattern in your data that's draining you. I'll find it.",
+      "Find the habit draining your recovery. AI + a pro athlete read your tracker export and email you the pattern that matters.",
     type: "website",
   },
 };
