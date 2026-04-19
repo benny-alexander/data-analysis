@@ -35,6 +35,7 @@ type Status = "idle" | "uploading" | "submitting" | "done" | "error";
 type Oversize = {
   file: File;
   reason: "single" | "total" | "count";
+  fromFolder?: boolean;
 };
 
 function fileKey(f: File): string {
@@ -46,6 +47,92 @@ function formatBytes(n: number): string {
   if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
   if (n >= 1024) return `${(n / 1024).toFixed(0)} KB`;
   return `${n} B`;
+}
+
+// Walks a dropped DataTransfer and returns a flat list of File objects,
+// descending into folders via the FileSystem Entry API. `dataTransfer.files`
+// alone is unreliable — on macOS Chrome/Safari, dropping a folder gives you
+// either an empty list or a zero-size sentinel, never the contents.
+async function extractDroppedFiles(
+  dt: DataTransfer,
+): Promise<{ files: File[]; hadDirectories: boolean }> {
+  const items = dt.items;
+  const useEntries =
+    items &&
+    items.length > 0 &&
+    typeof (items[0] as unknown as { webkitGetAsEntry?: () => unknown })
+      .webkitGetAsEntry === "function";
+
+  if (!useEntries) {
+    return { files: Array.from(dt.files), hadDirectories: false };
+  }
+
+  const roots: FileSystemEntry[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (item.kind !== "file") continue;
+    const entry = item.webkitGetAsEntry?.();
+    if (entry) roots.push(entry);
+  }
+
+  if (roots.length === 0) {
+    return { files: Array.from(dt.files), hadDirectories: false };
+  }
+
+  const files: File[] = [];
+  let hadDirectories = false;
+  for (const entry of roots) {
+    if (entry.isDirectory) {
+      hadDirectories = true;
+      await walkDirectory(entry as FileSystemDirectoryEntry, files);
+    } else if (entry.isFile) {
+      const f = await readEntryFile(entry as FileSystemFileEntry);
+      if (f) files.push(f);
+    }
+  }
+  return { files, hadDirectories };
+}
+
+function readEntryFile(entry: FileSystemFileEntry): Promise<File | null> {
+  return new Promise((resolve) => {
+    entry.file(
+      (f) => resolve(f),
+      () => resolve(null),
+    );
+  });
+}
+
+async function walkDirectory(
+  dir: FileSystemDirectoryEntry,
+  out: File[],
+): Promise<void> {
+  const reader = dir.createReader();
+  // readEntries returns a partial batch; keep calling until empty.
+  const children: FileSystemEntry[] = await new Promise((resolve) => {
+    const collected: FileSystemEntry[] = [];
+    const readBatch = () => {
+      reader.readEntries(
+        (batch) => {
+          if (batch.length === 0) {
+            resolve(collected);
+          } else {
+            collected.push(...batch);
+            readBatch();
+          }
+        },
+        () => resolve(collected),
+      );
+    };
+    readBatch();
+  });
+  for (const child of children) {
+    if (child.isDirectory) {
+      await walkDirectory(child as FileSystemDirectoryEntry, out);
+    } else if (child.isFile) {
+      const f = await readEntryFile(child as FileSystemFileEntry);
+      if (f) out.push(f);
+    }
+  }
 }
 
 export default function UploadForm() {
@@ -67,10 +154,11 @@ export default function UploadForm() {
   );
 
   const addFiles = useCallback(
-    (picked: FileList | File[] | null) => {
+    (picked: FileList | File[] | null, opts?: { fromFolder?: boolean }) => {
       setError(null);
       if (!picked || picked.length === 0) return;
 
+      const fromFolder = !!opts?.fromFolder;
       const incoming = Array.from(picked);
       const existingKeys = new Set(files.map(fileKey));
       const current = [...files];
@@ -85,22 +173,22 @@ export default function UploadForm() {
 
         // single-file size check
         if (f.size > MAX_FILE_BYTES) {
-          track("oversize_blocked", { reason: "single", size_mb: +(f.size / 1024 / 1024).toFixed(2) });
-          setOversize({ file: f, reason: "single" });
+          track("oversize_blocked", { reason: "single", size_mb: +(f.size / 1024 / 1024).toFixed(2), from_folder: fromFolder });
+          setOversize({ file: f, reason: "single", fromFolder });
           return;
         }
 
         // count check
         if (current.length >= MAX_FILES) {
-          track("oversize_blocked", { reason: "count" });
-          setOversize({ file: f, reason: "count" });
+          track("oversize_blocked", { reason: "count", from_folder: fromFolder });
+          setOversize({ file: f, reason: "count", fromFolder });
           return;
         }
 
         // total size check
         if (runningTotal + f.size > MAX_TOTAL_BYTES) {
-          track("oversize_blocked", { reason: "total", size_mb: +((runningTotal + f.size) / 1024 / 1024).toFixed(2) });
-          setOversize({ file: f, reason: "total" });
+          track("oversize_blocked", { reason: "total", size_mb: +((runningTotal + f.size) / 1024 / 1024).toFixed(2), from_folder: fromFolder });
+          setOversize({ file: f, reason: "total", fromFolder });
           return;
         }
 
@@ -114,6 +202,7 @@ export default function UploadForm() {
         track("file_added", {
           files_total: current.length,
           total_mb: +(runningTotal / 1024 / 1024).toFixed(2),
+          from_folder: fromFolder,
         });
       }
 
@@ -155,10 +244,13 @@ export default function UploadForm() {
     setStep(2);
   };
 
-  const onDrop: React.DragEventHandler<HTMLLabelElement> = (e) => {
+  const onDrop: React.DragEventHandler<HTMLLabelElement> = async (e) => {
     e.preventDefault();
     setDragging(false);
-    addFiles(e.dataTransfer.files);
+    const { files: extracted, hadDirectories } = await extractDroppedFiles(
+      e.dataTransfer,
+    );
+    addFiles(extracted, { fromFolder: hadDirectories });
   };
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
@@ -322,6 +414,10 @@ export default function UploadForm() {
             </p>
             <p className="mt-6 text-xs text-mute">
               .csv, .xml, .json, .zip &middot; up to 500 MB per file
+            </p>
+            <p className="mt-1 text-xs text-mute">
+              Folders work too. If you&rsquo;ve got more than 5 files inside,
+              zip the folder first.
             </p>
             <p className="mt-2 text-xs text-mute md:hidden max-w-[22rem]">
               On iPhone? Your export should be in your Files app (iCloud Drive,
@@ -622,8 +718,54 @@ function OversizeBlock({
   totalBytes: number;
   onDismiss: () => void;
 }) {
-  const { file, reason } = oversize;
+  const { file, reason, fromFolder } = oversize;
   const sizeLabel = formatBytes(file.size);
+
+  // Folder-drop overflow gets its own path — the helpful fix is "zip the
+  // folder and drop the zip", not WeTransfer.
+  if (fromFolder && reason === "count") {
+    return (
+      <div className="rounded-xl border border-line bg-white px-6 py-8">
+        <div className="flex items-start gap-4">
+          <div className="flex-none h-10 w-10 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+            <WarnIcon />
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-serif text-2xl tracking-tight">
+              That folder has more than {MAX_FILES} files.
+            </h3>
+            <p className="mt-3 text-sm text-ink/80 leading-relaxed">
+              I take up to {MAX_FILES} files at a time. Zip the folder first and
+              drop the zip &mdash; I&rsquo;ll unpack it.
+            </p>
+            <div className="mt-4 rounded-lg border border-line bg-paper px-4 py-3 text-sm text-ink/80 leading-relaxed">
+              <strong className="text-ink">How to zip:</strong>
+              <ul className="mt-2 space-y-1.5 list-disc pl-5">
+                <li>
+                  <strong>Mac:</strong> Right-click the folder in Finder &rarr;{" "}
+                  <em>Compress &ldquo;{file.name || "folder"}&rdquo;</em>.
+                </li>
+                <li>
+                  <strong>Windows:</strong> Right-click the folder &rarr;{" "}
+                  <em>Send to</em> &rarr; <em>Compressed (zipped) folder</em>.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="w-full rounded-lg bg-ink px-5 py-4 text-paper font-medium hover:bg-accent transition"
+          >
+            OK, I&rsquo;ll zip it and try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const headline =
     reason === "single"
