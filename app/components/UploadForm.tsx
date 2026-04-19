@@ -311,7 +311,7 @@ export default function UploadForm() {
           >
             <DropIcon className={isDragging ? "text-accent" : "text-mute"} />
             <p className="mt-5 font-serif text-2xl md:text-3xl tracking-tight">
-              Drop your data export here
+              Drop your fitness data here
             </p>
             <p className="mt-3 text-mute">
               or{" "}

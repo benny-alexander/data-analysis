@@ -35,8 +35,8 @@ export default function Home() {
           Find the habit draining your recovery.
         </h1>
         <p className="mt-6 text-lg text-ink/80 max-w-xl mx-auto">
-          AI reads the numbers. A pro athlete reads you. Drop your tracker
-          export &mdash; I&rsquo;ll send the pattern that matters within 48 hours.
+          AI finds the patterns in your data. I turn them into habit changes
+          &mdash; so you have more energy and hit your fitness goals.
         </p>
 
         {/* Tracker row — answers "what data?" at a glance */}
@@ -87,18 +87,18 @@ export default function Home() {
           <div className="grid gap-10 md:grid-cols-3">
             <Step
               n={1}
-              title="Export your data"
-              body="Apple Watch, Garmin, WHOOP, Strava or Oura. Takes 5 minutes to a few days depending on your tracker."
+              title="Upload your fitness data"
+              body="Export it from Apple Watch, Garmin, WHOOP, Strava or Oura and drop it in. Takes 5 minutes to a few days depending on your tracker."
             />
             <Step
               n={2}
-              title="AI surfaces the patterns"
-              body="An LLM reads every night and every workout, pulling the signals that matter for your goal."
+              title="AI analyses it against your goals"
+              body="An LLM reads every night, every workout and every session — looking for the patterns that matter for what you&rsquo;re trying to achieve."
             />
             <Step
               n={3}
-              title="I write your read"
-              body="I interpret what the AI surfaces, add context from 11 years in elite sport, and email you the pattern plus one experiment to run this week."
+              title="I interpret and suggest changes"
+              body="Based on your context, I email you a few habit changes to choose from &mdash; not a fixed plan, just options that fit your life this week."
             />
           </div>
         </div>
@@ -127,13 +127,15 @@ export default function Home() {
                 Read by a human
               </p>
               <h3 className="font-serif text-2xl tracking-tight">
-                I&rsquo;m {founderName}.
+                Made by {founderName}.
               </h3>
               <p className="mt-3 text-ink/80 leading-relaxed">
                 I played professional sport for 11 years in high-performance
-                environments. I&rsquo;ve seen firsthand how the one habit nobody
-                thinks about is usually the one bleeding your recovery. Your read
-                is written by me &mdash; not a bot.
+                environments. I&rsquo;ve tracked my own fitness data obsessively
+                the whole way &mdash; and for years I couldn&rsquo;t make sense of
+                it. AI changed that. It reads the noise so I can read the person.
+                I have more energy now than I did when I was playing, and I want
+                to help you find yours.
               </p>
             </div>
           </div>
