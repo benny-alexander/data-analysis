@@ -10,6 +10,16 @@ const founderName = process.env.NEXT_PUBLIC_FOUNDER_NAME || "Ben";
 // the env var to fall back to the initial-in-a-circle placeholder.
 const founderPhotoUrl =
   process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "/founder.png";
+const contactEmail =
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ben@alfredapp.com.au";
+// WhatsApp number in international format, digits only (e.g. 61412345678).
+// If blank, the Contact block hides the WhatsApp button.
+const whatsappNumber = (
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""
+).replace(/[^0-9]/g, "");
+// YouTube ID for the founder's how-it-works video. Leave blank to hide.
+const howItWorksVideoId =
+  process.env.NEXT_PUBLIC_HOW_IT_WORKS_VIDEO_ID || "JHWEjV330UQ";
 
 // Apple, Garmin, Strava have logomarks in Simple Icons (via react-icons/si).
 // WHOOP and Oura don't ship with Simple Icons — render them as uppercase
@@ -142,29 +152,33 @@ export default function Home() {
         </p>
       </section>
 
-      {/* How it works — makes the transaction legible */}
+      {/* How it works — video-first with a text fallback for skimmers */}
       <section className="border-t border-line bg-white">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <h2 className="font-serif text-3xl tracking-tight text-center mb-12">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <h2 className="font-serif text-3xl tracking-tight text-center">
             How it works
           </h2>
-          <div className="grid gap-10 md:grid-cols-3">
-            <Step
-              n={1}
-              title="Upload your fitness data"
-              body="Export it from Apple Watch, Garmin, WHOOP, Strava or Oura and drop it in. Takes 5 minutes to a few days depending on your tracker."
-            />
-            <Step
-              n={2}
-              title="AI analyses it against your goals"
-              body="AI reads every night, every workout and every session — looking for the patterns that matter for what you&rsquo;re trying to achieve."
-            />
-            <Step
-              n={3}
-              title="I interpret and suggest changes"
-              body="Based on your context, I email you a few habit changes to choose from &mdash; not a fixed plan, just options that fit your life this week."
-            />
-          </div>
+          <p className="mt-3 text-center text-sm text-mute">
+            30 seconds with {founderName}.
+          </p>
+
+          {howItWorksVideoId && (
+            <div className="mt-8 aspect-video rounded-xl overflow-hidden border border-line bg-paper shadow-sm">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${howItWorksVideoId}?rel=0`}
+                title={`How ${siteName} works — ${founderName}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                className="w-full h-full"
+              />
+            </div>
+          )}
+
+          <p className="mt-6 text-center text-sm text-ink/70">
+            Upload your data &rarr; AI finds the patterns &rarr; I email you a
+            short read within 48 hours.
+          </p>
         </div>
       </section>
 
@@ -238,6 +252,42 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Contact Ben */}
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <div className="rounded-2xl border border-line bg-white p-8 md:p-10 text-center">
+            <h2 className="font-serif text-2xl md:text-3xl tracking-tight">
+              Got a question?
+            </h2>
+            <p className="mt-3 text-ink/80">
+              Message me directly &mdash; I read every one.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-center">
+              {whatsappNumber && (
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                    `Hi ${founderName}, I've got a question about ${siteName}.`,
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg bg-accent px-6 py-3 text-paper font-medium hover:opacity-90 transition"
+                >
+                  Message on WhatsApp
+                </a>
+              )}
+              <a
+                href={`mailto:${contactEmail}?subject=${encodeURIComponent(
+                  `Question about ${siteName}`,
+                )}`}
+                className="rounded-lg border border-line bg-paper px-6 py-3 text-ink font-medium hover:border-mute transition"
+              >
+                Email {founderName}
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-line">
         <div className="mx-auto max-w-6xl px-6 py-10 text-sm text-mute flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -249,7 +299,7 @@ export default function Home() {
               How to export
             </Link>
             <a
-              href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ben@alfredapp.com.au"}`}
+              href={`mailto:${contactEmail}`}
               className="hover:text-ink"
             >
               Contact
@@ -261,24 +311,3 @@ export default function Home() {
   );
 }
 
-function Step({
-  n,
-  title,
-  body,
-}: {
-  n: number;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div>
-      <div className="flex items-center gap-3 mb-3">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-ink text-paper text-sm font-medium">
-          {n}
-        </span>
-        <h3 className="font-medium">{title}</h3>
-      </div>
-      <p className="text-sm text-ink/70 leading-relaxed">{body}</p>
-    </div>
-  );
-}
