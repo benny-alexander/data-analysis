@@ -13,17 +13,55 @@ const founderPhotoUrl =
 
 // Apple, Garmin, Strava have logomarks in Simple Icons (via react-icons/si).
 // WHOOP and Oura don't ship with Simple Icons — render them as uppercase
-// wordmarks styled to roughly match the logomark height. Mixed but cohesive.
+// wordmarks styled to roughly match the logomark height.
+//
+// Colors: each tracker uses its actual brand color. Apple, WHOOP and Oura
+// are genuinely monochrome brands (their logos are solid black), so they
+// stay black — not for lack of care, that's their brand. Garmin uses
+// their marketing blue (Simple Icons lists black but Garmin's own
+// collateral leans blue), and Strava gets its iconic orange.
+//
+// Garmin's logomark is a wordmark-with-triangle — wider than the others
+// and hard to read at h-6. It gets bumped to h-8 so the letterforms are
+// legible alongside Apple and Strava.
 type Tracker =
-  | { label: string; slug: string; kind: "icon"; Icon: IconType }
-  | { label: string; slug: string; kind: "wordmark" };
+  | {
+      label: string;
+      slug: string;
+      kind: "icon";
+      Icon: IconType;
+      color: string;
+      sizeClass: string;
+    }
+  | { label: string; slug: string; kind: "wordmark"; color: string };
 
 const TRACKERS: Tracker[] = [
-  { label: "Apple Watch", slug: "apple", kind: "icon", Icon: SiApple },
-  { label: "Garmin", slug: "garmin", kind: "icon", Icon: SiGarmin },
-  { label: "WHOOP", slug: "whoop", kind: "wordmark" },
-  { label: "Strava", slug: "strava", kind: "icon", Icon: SiStrava },
-  { label: "Oura", slug: "oura", kind: "wordmark" },
+  {
+    label: "Apple Watch",
+    slug: "apple",
+    kind: "icon",
+    Icon: SiApple,
+    color: "#000000",
+    sizeClass: "h-6 w-auto",
+  },
+  {
+    label: "Garmin",
+    slug: "garmin",
+    kind: "icon",
+    Icon: SiGarmin,
+    color: "#007CC3",
+    sizeClass: "h-8 w-auto",
+  },
+  { label: "WHOOP", slug: "whoop", kind: "wordmark", color: "#000000" },
+  {
+    label: "Strava",
+    slug: "strava",
+    kind: "icon",
+    Icon: SiStrava,
+    color: "#FC4C02",
+    sizeClass: "h-6 w-auto",
+  },
+  { label: "Oura", slug: "oura", kind: "wordmark", color: "#000000" },
 ];
 
 export default function Home() {
@@ -62,17 +100,18 @@ export default function Home() {
           <p className="text-xs uppercase tracking-[0.14em] text-mute mb-3">
             Works with
           </p>
-          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-ink/70">
+          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 min-h-8">
             {TRACKERS.map((t) => (
               <li key={t.slug}>
                 <Link
                   href={`/how-to-export?device=${t.slug}`}
                   aria-label={`How to export from ${t.label}`}
                   title={t.label}
-                  className="inline-flex items-center h-6 hover:text-ink transition"
+                  style={{ color: t.color }}
+                  className="inline-flex items-center opacity-90 hover:opacity-100 transition"
                 >
                   {t.kind === "icon" ? (
-                    <t.Icon className="h-6 w-auto" aria-hidden />
+                    <t.Icon className={t.sizeClass} aria-hidden />
                   ) : (
                     <span className="text-sm font-bold tracking-[0.15em] uppercase">
                       {t.label}
