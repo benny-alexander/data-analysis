@@ -7,7 +7,7 @@ const founderName = process.env.NEXT_PUBLIC_FOUNDER_NAME || "Ben";
 // override (e.g. to a Blob or CDN URL). Leave the file absent and unset
 // the env var to fall back to the initial-in-a-circle placeholder.
 const founderPhotoUrl =
-  process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "/founder.jpg";
+  process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "/founder.png";
 
 const TRACKERS = ["Apple Watch", "Garmin", "WHOOP", "Strava", "Oura"];
 
