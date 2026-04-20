@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { IconType } from "react-icons";
-import { SiApple, SiGarmin, SiLinkedin, SiStrava } from "react-icons/si";
+import { FaLinkedin } from "react-icons/fa";
+import { SiApple, SiGarmin, SiStrava } from "react-icons/si";
 import HowItWorksVideo from "./components/HowItWorksVideo";
 import UploadForm from "./components/UploadForm";
 
@@ -217,7 +218,7 @@ export default function Home() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg border border-line bg-paper px-4 py-2 text-sm font-medium text-ink hover:border-mute transition"
                 >
-                  <SiLinkedin className="h-4 w-4" style={{ color: "#0A66C2" }} aria-hidden />
+                  <FaLinkedin className="h-4 w-4" style={{ color: "#0A66C2" }} aria-hidden />
                   Learn more about {founderName}
                 </a>
               </div>
