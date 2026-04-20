@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { IconType } from "react-icons";
 import { FaLinkedin } from "react-icons/fa";
 import { SiApple, SiGarmin, SiStrava } from "react-icons/si";
+import ExportInstructions from "./components/ExportInstructions";
 import HowItWorksVideo from "./components/HowItWorksVideo";
 import UploadForm from "./components/UploadForm";
 
@@ -139,22 +140,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The form */}
-      <section id="upload" className="mx-auto max-w-2xl px-6 pb-6">
-        <UploadForm />
-        <p className="mt-6 text-center text-sm text-mute">
-          Don&rsquo;t know how to export your data?{" "}
-          <Link
-            href="/how-to-export"
-            className="text-accent underline underline-offset-4 hover:text-ink"
-          >
-            Step-by-step here
-          </Link>
-          .
-        </p>
-      </section>
-
-      {/* How it works — video-first with a text fallback for skimmers */}
+      {/* How it works — video-first, above the upload so people see the
+          explanation before being asked to hand over their data. */}
       <section className="border-t border-line bg-white">
         <div className="mx-auto max-w-3xl px-6 py-16">
           <h2 className="font-serif text-3xl tracking-tight text-center">
@@ -171,10 +158,39 @@ export default function Home() {
             />
           )}
 
-          <p className="mt-6 text-center text-sm text-ink/70">
-            Upload your data &rarr; AI finds the patterns &rarr; I email you a
-            short read within 48 hours.
+          <p className="mt-6 text-center text-base text-ink/80">
+            Upload your data &rarr; I&rsquo;ll email you a short report within
+            24 hours.
           </p>
+        </div>
+      </section>
+
+      {/* The form */}
+      <section id="upload" className="border-t border-line">
+        <div className="mx-auto max-w-2xl px-6 py-16">
+          <UploadForm />
+
+          <details className="mt-8 rounded-2xl border border-line bg-white">
+            <summary className="cursor-pointer list-none px-6 py-4 text-sm font-medium text-ink flex items-center justify-between hover:text-accent">
+              <span>Don&rsquo;t know how to export your data?</span>
+              <span className="text-mute text-xs uppercase tracking-widest">
+                Show steps
+              </span>
+            </summary>
+            <div className="border-t border-line px-6 py-8">
+              <ExportInstructions />
+              <p className="mt-8 text-sm text-mute">
+                Prefer the full guide?{" "}
+                <Link
+                  href="/how-to-export"
+                  className="text-accent underline underline-offset-4 hover:text-ink"
+                >
+                  Open it on its own page
+                </Link>
+                .
+              </p>
+            </div>
+          </details>
         </div>
       </section>
 
