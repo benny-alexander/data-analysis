@@ -19,11 +19,10 @@ export default function SuccessPage() {
           Got it.
         </h1>
         <p className="mt-6 text-lg text-ink/80">
-          Your data is with me. I&rsquo;ll email you within 48 hours.
+          I&rsquo;ll email you within 48 hours.
         </p>
-        <p className="mt-4 text-sm text-mute">
-          Check Promotions and Spam &mdash; my first reply sometimes lands
-          there.
+        <p className="mt-3 text-xs text-mute">
+          Check Promotions and Spam if you don&rsquo;t see it.
         </p>
       </section>
 
@@ -38,10 +37,8 @@ export default function SuccessPage() {
                 <h2 className="font-serif text-2xl tracking-tight">
                   While you wait &mdash; join the chat
                 </h2>
-                <p className="mt-3 text-sm text-ink/80 leading-relaxed">
-                  A small WhatsApp group of people doing the same work on their
-                  own data. No noise, no pressure &mdash; just people thinking out
-                  loud about sleep, training, and energy. Introverts welcome.
+                <p className="mt-2 text-sm text-ink/80 leading-relaxed">
+                  A low-key group of people figuring out their own data.
                 </p>
               </div>
             </div>
