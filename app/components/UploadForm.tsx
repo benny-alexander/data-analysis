@@ -412,17 +412,6 @@ export default function UploadForm() {
                 tap to upload from Files
               </span>
             </p>
-            <p className="mt-6 text-xs text-mute">
-              .csv, .xml, .json, .zip &middot; up to 500 MB per file
-            </p>
-            <p className="mt-1 text-xs text-mute">
-              Folders work too. If you&rsquo;ve got more than 5 files inside,
-              zip the folder first.
-            </p>
-            <p className="mt-2 text-xs text-mute md:hidden max-w-[22rem]">
-              On iPhone? Your export should be in your Files app (iCloud Drive,
-              Downloads, or wherever you saved it).
-            </p>
             <input
               ref={fileInputRef}
               id="file"
