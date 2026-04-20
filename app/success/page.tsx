@@ -38,7 +38,7 @@ export default function SuccessPage() {
                   While you wait &mdash; join the chat
                 </h2>
                 <p className="mt-2 text-sm text-ink/80 leading-relaxed">
-                  A small group of people figuring out their own data.
+                  Friends trying to understand their own data.
                 </p>
               </div>
             </div>
