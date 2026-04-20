@@ -3,8 +3,11 @@ import UploadForm from "./components/UploadForm";
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "The Read";
 const founderName = process.env.NEXT_PUBLIC_FOUNDER_NAME || "Ben";
-// Optional. If set, renders the founder photo in the hero credibility card.
-const founderPhotoUrl = process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "";
+// Defaults to /founder.jpg in the public folder. Set the env var to
+// override (e.g. to a Blob or CDN URL). Leave the file absent and unset
+// the env var to fall back to the initial-in-a-circle placeholder.
+const founderPhotoUrl =
+  process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "/founder.png";
 
 const TRACKERS = ["Apple Watch", "Garmin", "WHOOP", "Strava", "Oura"];
 
@@ -35,8 +38,8 @@ export default function Home() {
           Find the habit draining your recovery.
         </h1>
         <p className="mt-6 text-lg text-ink/80 max-w-xl mx-auto">
-          AI finds the patterns in your data. I turn them into habit changes
-          &mdash; so you have more energy and hit your fitness goals.
+          AI finds the patterns in your data so you can sleep better and hit
+          your fitness goals.
         </p>
 
         {/* Tracker row — answers "what data?" at a glance */}
@@ -93,7 +96,7 @@ export default function Home() {
             <Step
               n={2}
               title="AI analyses it against your goals"
-              body="An LLM reads every night, every workout and every session — looking for the patterns that matter for what you&rsquo;re trying to achieve."
+              body="AI reads every night, every workout and every session — looking for the patterns that matter for what you&rsquo;re trying to achieve."
             />
             <Step
               n={3}
@@ -114,7 +117,7 @@ export default function Home() {
                 <img
                   src={founderPhotoUrl}
                   alt={founderName}
-                  className="h-24 w-24 md:h-28 md:w-28 rounded-full object-cover border border-line"
+                  className="h-24 w-24 md:h-28 md:w-28 rounded-full object-cover object-top border border-line"
                 />
               ) : (
                 <div className="h-24 w-24 md:h-28 md:w-28 rounded-full bg-accent/10 text-accent flex items-center justify-center font-serif text-3xl border border-accent/20">
@@ -130,12 +133,12 @@ export default function Home() {
                 Made by {founderName}.
               </h3>
               <p className="mt-3 text-ink/80 leading-relaxed">
-                I played professional sport for 11 years in high-performance
-                environments. I&rsquo;ve tracked my own fitness data obsessively
-                the whole way &mdash; and for years I couldn&rsquo;t make sense of
-                it. AI changed that. It reads the noise so I can read the person.
-                I have more energy now than I did when I was playing, and I want
-                to help you find yours.
+                I&rsquo;m a former Wallabies prop. I played professional rugby
+                for 11 years, and through all of it, coaches and trainers tracked
+                my data for me. When I retired, I had to learn to read it myself
+                &mdash; and AI is what finally helped me make sense of it. I want
+                to help you do the same, so you can sleep better, feel great,
+                and hit your fitness goals.
               </p>
             </div>
           </div>
