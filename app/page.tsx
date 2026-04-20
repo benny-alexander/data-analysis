@@ -9,7 +9,13 @@ const founderName = process.env.NEXT_PUBLIC_FOUNDER_NAME || "Ben";
 const founderPhotoUrl =
   process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "/founder.png";
 
-const TRACKERS = ["Apple Watch", "Garmin", "WHOOP", "Strava", "Oura"];
+const TRACKERS: { label: string; slug: string }[] = [
+  { label: "Apple Watch", slug: "apple" },
+  { label: "Garmin", slug: "garmin" },
+  { label: "WHOOP", slug: "whoop" },
+  { label: "Strava", slug: "strava" },
+  { label: "Oura", slug: "oura" },
+];
 
 export default function Home() {
   return (
@@ -49,8 +55,13 @@ export default function Home() {
           </p>
           <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink/70">
             {TRACKERS.map((t, i) => (
-              <li key={t} className="flex items-center gap-5">
-                <span className="font-medium">{t}</span>
+              <li key={t.slug} className="flex items-center gap-5">
+                <Link
+                  href={`/how-to-export?device=${t.slug}`}
+                  className="font-medium underline-offset-4 hover:underline hover:text-ink transition"
+                >
+                  {t.label}
+                </Link>
                 {i < TRACKERS.length - 1 && (
                   <span className="text-line" aria-hidden>
                     &middot;
