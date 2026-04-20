@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { IconType } from "react-icons";
+import { SiApple, SiGarmin, SiStrava } from "react-icons/si";
 import UploadForm from "./components/UploadForm";
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "The Read";
@@ -9,12 +11,19 @@ const founderName = process.env.NEXT_PUBLIC_FOUNDER_NAME || "Ben";
 const founderPhotoUrl =
   process.env.NEXT_PUBLIC_FOUNDER_PHOTO_URL || "/founder.png";
 
-const TRACKERS: { label: string; slug: string }[] = [
-  { label: "Apple Watch", slug: "apple" },
-  { label: "Garmin", slug: "garmin" },
-  { label: "WHOOP", slug: "whoop" },
-  { label: "Strava", slug: "strava" },
-  { label: "Oura", slug: "oura" },
+// Apple, Garmin, Strava have logomarks in Simple Icons (via react-icons/si).
+// WHOOP and Oura don't ship with Simple Icons — render them as uppercase
+// wordmarks styled to roughly match the logomark height. Mixed but cohesive.
+type Tracker =
+  | { label: string; slug: string; kind: "icon"; Icon: IconType }
+  | { label: string; slug: string; kind: "wordmark" };
+
+const TRACKERS: Tracker[] = [
+  { label: "Apple Watch", slug: "apple", kind: "icon", Icon: SiApple },
+  { label: "Garmin", slug: "garmin", kind: "icon", Icon: SiGarmin },
+  { label: "WHOOP", slug: "whoop", kind: "wordmark" },
+  { label: "Strava", slug: "strava", kind: "icon", Icon: SiStrava },
+  { label: "Oura", slug: "oura", kind: "wordmark" },
 ];
 
 export default function Home() {
@@ -53,20 +62,23 @@ export default function Home() {
           <p className="text-xs uppercase tracking-[0.14em] text-mute mb-3">
             Works with
           </p>
-          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink/70">
-            {TRACKERS.map((t, i) => (
-              <li key={t.slug} className="flex items-center gap-5">
+          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-ink/70">
+            {TRACKERS.map((t) => (
+              <li key={t.slug}>
                 <Link
                   href={`/how-to-export?device=${t.slug}`}
-                  className="font-medium underline-offset-4 hover:underline hover:text-ink transition"
+                  aria-label={`How to export from ${t.label}`}
+                  title={t.label}
+                  className="inline-flex items-center h-6 hover:text-ink transition"
                 >
-                  {t.label}
+                  {t.kind === "icon" ? (
+                    <t.Icon className="h-6 w-auto" aria-hidden />
+                  ) : (
+                    <span className="text-sm font-bold tracking-[0.15em] uppercase">
+                      {t.label}
+                    </span>
+                  )}
                 </Link>
-                {i < TRACKERS.length - 1 && (
-                  <span className="text-line" aria-hidden>
-                    &middot;
-                  </span>
-                )}
               </li>
             ))}
           </ul>
