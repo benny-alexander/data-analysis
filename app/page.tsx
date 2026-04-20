@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { IconType } from "react-icons";
 import { SiApple, SiGarmin, SiStrava } from "react-icons/si";
+import HowItWorksVideo from "./components/HowItWorksVideo";
 import UploadForm from "./components/UploadForm";
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "The Read";
@@ -163,16 +164,10 @@ export default function Home() {
           </p>
 
           {howItWorksVideoId && (
-            <div className="mt-8 aspect-video rounded-xl overflow-hidden border border-line bg-paper shadow-sm">
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${howItWorksVideoId}?rel=0`}
-                title={`How ${siteName} works — ${founderName}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-                className="w-full h-full"
-              />
-            </div>
+            <HowItWorksVideo
+              videoId={howItWorksVideoId}
+              title={`How ${siteName} works — ${founderName}`}
+            />
           )}
 
           <p className="mt-6 text-center text-sm text-ink/70">
