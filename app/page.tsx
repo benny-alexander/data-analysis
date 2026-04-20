@@ -50,7 +50,10 @@ const TRACKERS: Tracker[] = [
     kind: "icon",
     Icon: SiGarmin,
     color: "#007CC3",
-    sizeClass: "h-8 w-auto",
+    // Garmin's wordmark-with-triangle renders with short letters relative
+    // to the SVG bounding box, so it needs to be substantially taller than
+    // other marks to match WHOOP's visible text height.
+    sizeClass: "h-14 w-auto",
   },
   { label: "WHOOP", slug: "whoop", kind: "wordmark", color: "#000000" },
   {
@@ -100,7 +103,7 @@ export default function Home() {
           <p className="text-xs uppercase tracking-[0.14em] text-mute mb-3">
             Works with
           </p>
-          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 min-h-8">
+          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 min-h-14">
             {TRACKERS.map((t) => (
               <li key={t.slug}>
                 <Link
@@ -127,11 +130,7 @@ export default function Home() {
       {/* The form */}
       <section id="upload" className="mx-auto max-w-2xl px-6 pb-6">
         <UploadForm />
-        <p className="mt-4 text-center text-xs text-mute">
-          Your export stays with me. Deleted once I&rsquo;ve sent your read. No
-          resale, no mailing list.
-        </p>
-        <p className="mt-4 text-center text-sm text-mute">
+        <p className="mt-6 text-center text-sm text-mute">
           Don&rsquo;t know how to export your data?{" "}
           <Link
             href="/how-to-export"
