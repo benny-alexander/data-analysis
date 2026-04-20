@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "The Read";
 
@@ -15,8 +16,36 @@ const DEVICES: { key: Device; label: string; subtitle: string }[] = [
   { key: "oura", label: "Oura", subtitle: "Instant · CSV bundle" },
 ];
 
+const VALID_DEVICES = new Set<Device>([
+  "apple",
+  "garmin",
+  "whoop",
+  "strava",
+  "oura",
+]);
+
+// Wrapped in Suspense because useSearchParams forces dynamic rendering
+// otherwise. The rest of the page is static-friendly.
 export default function HowToExportPage() {
-  const [active, setActive] = useState<Device>("apple");
+  return (
+    <Suspense fallback={<HowToExportInner initial="apple" />}>
+      <HowToExportWithParams />
+    </Suspense>
+  );
+}
+
+function HowToExportWithParams() {
+  const params = useSearchParams();
+  const deviceParam = params.get("device");
+  const initial: Device =
+    deviceParam && VALID_DEVICES.has(deviceParam as Device)
+      ? (deviceParam as Device)
+      : "apple";
+  return <HowToExportInner initial={initial} />;
+}
+
+function HowToExportInner({ initial }: { initial: Device }) {
+  const [active, setActive] = useState<Device>(initial);
 
   return (
     <main className="min-h-screen">
