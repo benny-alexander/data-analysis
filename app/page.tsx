@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { IconType } from "react-icons";
+import { FaLinkedin } from "react-icons/fa";
 import { SiApple, SiGarmin, SiStrava } from "react-icons/si";
+import ExportInstructions from "./components/ExportInstructions";
 import HowItWorksVideo from "./components/HowItWorksVideo";
 import UploadForm from "./components/UploadForm";
 
@@ -138,22 +140,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The form */}
-      <section id="upload" className="mx-auto max-w-2xl px-6 pb-6">
-        <UploadForm />
-        <p className="mt-6 text-center text-sm text-mute">
-          Don&rsquo;t know how to export your data?{" "}
-          <Link
-            href="/how-to-export"
-            className="text-accent underline underline-offset-4 hover:text-ink"
-          >
-            Step-by-step here
-          </Link>
-          .
-        </p>
-      </section>
-
-      {/* How it works — video-first with a text fallback for skimmers */}
+      {/* How it works — video-first, above the upload so people see the
+          explanation before being asked to hand over their data. */}
       <section className="border-t border-line bg-white">
         <div className="mx-auto max-w-3xl px-6 py-16">
           <h2 className="font-serif text-3xl tracking-tight text-center">
@@ -170,10 +158,39 @@ export default function Home() {
             />
           )}
 
-          <p className="mt-6 text-center text-sm text-ink/70">
-            Upload your data &rarr; AI finds the patterns &rarr; I email you a
-            short read within 48 hours.
+          <p className="mt-6 text-center text-base text-ink/80">
+            Upload your data &rarr; I&rsquo;ll email you a short report within
+            24 hours.
           </p>
+        </div>
+      </section>
+
+      {/* The form */}
+      <section id="upload" className="border-t border-line">
+        <div className="mx-auto max-w-2xl px-6 py-16">
+          <UploadForm />
+
+          <details className="mt-8 rounded-2xl border border-line bg-white">
+            <summary className="cursor-pointer list-none px-6 py-4 text-sm font-medium text-ink flex items-center justify-between hover:text-accent">
+              <span>Don&rsquo;t know how to export your data?</span>
+              <span className="text-mute text-xs uppercase tracking-widest">
+                Show steps
+              </span>
+            </summary>
+            <div className="border-t border-line px-6 py-8">
+              <ExportInstructions />
+              <p className="mt-8 text-sm text-mute">
+                Prefer the full guide?{" "}
+                <Link
+                  href="/how-to-export"
+                  className="text-accent underline underline-offset-4 hover:text-ink"
+                >
+                  Open it on its own page
+                </Link>
+                .
+              </p>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -210,6 +227,17 @@ export default function Home() {
                 to help you do the same, so you can sleep better, feel great,
                 and hit your fitness goals.
               </p>
+              <div className="mt-5">
+                <a
+                  href="https://www.linkedin.com/in/ben-alexander-684228b6/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-line bg-paper px-4 py-2 text-sm font-medium text-ink hover:border-mute transition"
+                >
+                  <FaLinkedin className="h-4 w-4" style={{ color: "#0A66C2" }} aria-hidden />
+                  Learn more about {founderName}
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -221,26 +249,20 @@ export default function Home() {
           <h2 className="font-serif text-3xl tracking-tight text-center mb-10">
             What you&rsquo;ll get
           </h2>
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2">
             <div>
-              <h3 className="font-medium mb-2">A personal read</h3>
+              <h3 className="font-medium mb-2">On track or off track</h3>
               <p className="text-sm text-ink/70 leading-relaxed">
-                Written by me. No dashboard, no score out of 100, no app to
-                download.
+                A clear read on whether your week is moving you toward your
+                health and fitness goals &mdash; or quietly pulling you away
+                from them.
               </p>
             </div>
             <div>
-              <h3 className="font-medium mb-2">Honest observations</h3>
+              <h3 className="font-medium mb-2">One or two things to try</h3>
               <p className="text-sm text-ink/70 leading-relaxed">
-                What&rsquo;s working, what isn&rsquo;t, and the pattern
-                underneath the numbers your app is hiding.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-medium mb-2">One focused experiment</h3>
-              <p className="text-sm text-ink/70 leading-relaxed">
-                Something small and specific you can run this week &mdash; not a
-                30-day plan you&rsquo;ll abandon.
+                Small, specific experiments you can run next week. No 30-day
+                plan, no dashboard to check &mdash; just the next useful move.
               </p>
             </div>
           </div>
@@ -255,7 +277,7 @@ export default function Home() {
               Got a question?
             </h2>
             <p className="mt-3 text-ink/80">
-              Message me directly &mdash; I read every one.
+              Message me directly.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-center">
               {whatsappNumber && (
