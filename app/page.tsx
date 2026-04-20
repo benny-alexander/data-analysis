@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { IconType } from "react-icons";
-import { SiApple, SiGarmin, SiStrava } from "react-icons/si";
+import { SiApple, SiGarmin, SiLinkedin, SiStrava } from "react-icons/si";
 import HowItWorksVideo from "./components/HowItWorksVideo";
 import UploadForm from "./components/UploadForm";
 
@@ -210,6 +210,17 @@ export default function Home() {
                 to help you do the same, so you can sleep better, feel great,
                 and hit your fitness goals.
               </p>
+              <div className="mt-5">
+                <a
+                  href="https://www.linkedin.com/in/ben-alexander-684228b6/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-line bg-paper px-4 py-2 text-sm font-medium text-ink hover:border-mute transition"
+                >
+                  <SiLinkedin className="h-4 w-4" style={{ color: "#0A66C2" }} aria-hidden />
+                  Learn more about {founderName}
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -221,26 +232,20 @@ export default function Home() {
           <h2 className="font-serif text-3xl tracking-tight text-center mb-10">
             What you&rsquo;ll get
           </h2>
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2">
             <div>
-              <h3 className="font-medium mb-2">A personal read</h3>
+              <h3 className="font-medium mb-2">On track or off track</h3>
               <p className="text-sm text-ink/70 leading-relaxed">
-                Written by me. No dashboard, no score out of 100, no app to
-                download.
+                A clear read on whether your week is moving you toward your
+                health and fitness goals &mdash; or quietly pulling you away
+                from them.
               </p>
             </div>
             <div>
-              <h3 className="font-medium mb-2">Honest observations</h3>
+              <h3 className="font-medium mb-2">One or two things to try</h3>
               <p className="text-sm text-ink/70 leading-relaxed">
-                What&rsquo;s working, what isn&rsquo;t, and the pattern
-                underneath the numbers your app is hiding.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-medium mb-2">One focused experiment</h3>
-              <p className="text-sm text-ink/70 leading-relaxed">
-                Something small and specific you can run this week &mdash; not a
-                30-day plan you&rsquo;ll abandon.
+                Small, specific experiments you can run next week. No 30-day
+                plan, no dashboard to check &mdash; just the next useful move.
               </p>
             </div>
           </div>
@@ -255,7 +260,7 @@ export default function Home() {
               Got a question?
             </h2>
             <p className="mt-3 text-ink/80">
-              Message me directly &mdash; I read every one.
+              Message me directly.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-center">
               {whatsappNumber && (
