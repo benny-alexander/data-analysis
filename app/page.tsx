@@ -98,15 +98,11 @@ export default function Home() {
 
       {/* Hero */}
       <section className="mx-auto max-w-3xl px-6 pt-14 pb-8 text-center">
-        <p className="text-xs uppercase tracking-[0.18em] text-accent font-medium mb-5">
-          A personal read of your fitness data
-        </p>
         <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight">
-          Find the habit draining your recovery.
+          Sleep, Move and Feel Better
         </h1>
         <p className="mt-6 text-lg text-ink/80 max-w-xl mx-auto">
-          AI finds the patterns in your data so you can sleep better and hit
-          your fitness goals.
+          Have your fitness data analysed by AI and an elite athlete.
         </p>
 
         {/* Tracker row — answers "what data?" at a glance */}
