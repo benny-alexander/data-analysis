@@ -143,7 +143,7 @@ export default function Home() {
             href="/how-to-export"
             className="text-accent underline underline-offset-4 hover:text-ink"
           >
-            Step-by-step here
+            Click here
           </Link>
           .
         </p>
@@ -155,9 +155,6 @@ export default function Home() {
           <h2 className="font-serif text-3xl tracking-tight text-center">
             How it works
           </h2>
-          <p className="mt-3 text-center text-sm text-mute">
-            30 seconds with {founderName}.
-          </p>
 
           {howItWorksVideoId && (
             <HowItWorksVideo
@@ -167,8 +164,8 @@ export default function Home() {
           )}
 
           <p className="mt-6 text-center text-sm text-ink/70">
-            Upload your data &rarr; AI finds the patterns &rarr; I email you a
-            short read within 48 hours.
+            AI runs the analysis. {founderName} interprets it and emails you a
+            report within 24 hours.
           </p>
         </div>
       </section>
@@ -192,19 +189,13 @@ export default function Home() {
               )}
             </div>
             <div className="min-w-0">
-              <p className="text-xs uppercase tracking-[0.14em] text-mute mb-2">
-                Read by a human
-              </p>
               <h3 className="font-serif text-2xl tracking-tight">
                 Made by {founderName}.
               </h3>
               <p className="mt-3 text-ink/80 leading-relaxed">
-                I&rsquo;m a former Wallabies prop. I played professional rugby
-                for 11 years, and through all of it, coaches and trainers tracked
-                my data for me. When I retired, I had to learn to read it myself
-                &mdash; and AI is what finally helped me make sense of it. I want
-                to help you do the same, so you can sleep better, feel great,
-                and hit your fitness goals.
+                Former Wallabies prop. For 11 years, coaches and trainers read
+                my data for me. When I retired I had to learn it myself &mdash;
+                AI is what finally cracked it. I&rsquo;ll help you do the same.
               </p>
             </div>
           </div>
@@ -250,10 +241,15 @@ export default function Home() {
             <h2 className="font-serif text-2xl md:text-3xl tracking-tight">
               Got a question?
             </h2>
-            <p className="mt-3 text-ink/80">
-              Message me directly &mdash; I read every one.
-            </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-center">
+              <a
+                href={`mailto:${contactEmail}?subject=${encodeURIComponent(
+                  `Question about ${siteName}`,
+                )}`}
+                className="rounded-lg border border-line bg-paper px-6 py-3 text-ink font-medium hover:border-mute transition"
+              >
+                Email {founderName}
+              </a>
               {whatsappNumber && (
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
@@ -263,17 +259,9 @@ export default function Home() {
                   rel="noreferrer"
                   className="rounded-lg bg-accent px-6 py-3 text-paper font-medium hover:opacity-90 transition"
                 >
-                  Message on WhatsApp
+                  WhatsApp {founderName}
                 </a>
               )}
-              <a
-                href={`mailto:${contactEmail}?subject=${encodeURIComponent(
-                  `Question about ${siteName}`,
-                )}`}
-                className="rounded-lg border border-line bg-paper px-6 py-3 text-ink font-medium hover:border-mute transition"
-              >
-                Email {founderName}
-              </a>
             </div>
           </div>
         </div>
