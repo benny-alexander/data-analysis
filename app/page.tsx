@@ -195,7 +195,8 @@ export default function Home() {
               <p className="mt-3 text-ink/80 leading-relaxed">
                 Former Wallabies prop. For 11 years, coaches and trainers read
                 my data for me. When I retired I had to learn it myself &mdash;
-                AI is what finally cracked it. I&rsquo;ll help you do the same.
+                AI is what finally helped me see the patterns. I&rsquo;ll help
+                you do the same.
               </p>
             </div>
           </div>
