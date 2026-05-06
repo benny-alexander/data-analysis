@@ -21,6 +21,10 @@ const whatsappNumber = (
 // YouTube ID for the founder's how-it-works video. Leave blank to hide.
 const howItWorksVideoId =
   process.env.NEXT_PUBLIC_HOW_IT_WORKS_VIDEO_ID || "JHWEjV330UQ";
+// Count of reads delivered so far. Bump via Vercel env var without a commit.
+const readsDelivered = Number(
+  process.env.NEXT_PUBLIC_READS_DELIVERED || "15",
+);
 
 // Apple, Garmin, Strava have logomarks in Simple Icons (via react-icons/si).
 // WHOOP and Oura don't ship with Simple Icons — render them as uppercase
@@ -102,7 +106,7 @@ export default function Home() {
           Sleep, Move and Feel Better
         </h1>
         <p className="mt-6 text-lg text-ink/80 max-w-xl mx-auto">
-          Have your fitness data analysed by AI and an elite athlete.
+          AI analyses your data. I tell you what it means.
         </p>
 
         {/* Tracker row — answers "what data?" at a glance */}
@@ -170,6 +174,30 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Editorial stat — quiet badge of credibility, framed like a colophon */}
+      {readsDelivered > 0 && (
+        <section className="border-t border-line">
+          <div className="mx-auto max-w-3xl px-6 py-24 md:py-28 text-center">
+            <p className="text-[11px] uppercase tracking-[0.32em] text-mute">
+              Reads delivered to date
+            </p>
+            <p
+              className="mt-8 font-serif text-[8.5rem] md:text-[12rem] leading-[0.85] text-accent reads-counter-rise"
+              aria-label={`${readsDelivered} reads delivered`}
+            >
+              {readsDelivered}
+            </p>
+            <div
+              className="mx-auto mt-10 h-px w-16 bg-line"
+              aria-hidden="true"
+            />
+            <p className="mt-8 font-serif italic text-base md:text-lg text-mute max-w-md mx-auto leading-relaxed">
+              Each one interpreted by {founderName}, not a chatbot.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* Credibility — who's actually reading your data */}
       <section className="border-t border-line">
         <div className="mx-auto max-w-3xl px-6 py-16">
@@ -194,9 +222,9 @@ export default function Home() {
               </h3>
               <p className="mt-3 text-ink/80 leading-relaxed">
                 Former Wallabies prop. For 11 years, coaches and trainers read
-                my data for me. When I retired I had to learn it myself &mdash;
-                AI is what finally helped me see the patterns. I&rsquo;ll help
-                you do the same.
+                my data for me. When I retired I had to learn it myself. AI
+                is what finally helped me see the patterns. Now I do that for
+                other people.
               </p>
             </div>
           </div>
@@ -213,8 +241,8 @@ export default function Home() {
             <div>
               <h3 className="font-medium mb-2">A personal read</h3>
               <p className="text-sm text-ink/70 leading-relaxed">
-                Written by me. No dashboard, no score out of 100, no app to
-                download.
+                Interpreted by me. No dashboard, no score out of 100, no app
+                to download.
               </p>
             </div>
             <div>
@@ -227,7 +255,7 @@ export default function Home() {
             <div>
               <h3 className="font-medium mb-2">One focused experiment</h3>
               <p className="text-sm text-ink/70 leading-relaxed">
-                Something small and specific you can run this week &mdash; not a
+                Something small and specific you can run this week. Not a
                 30-day plan you&rsquo;ll abandon.
               </p>
             </div>
@@ -235,8 +263,73 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Ben */}
+      {/* Who this is for — qualifying filter before the contact CTA */}
       <section className="border-t border-line">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <h2 className="font-serif text-3xl tracking-tight text-center">
+            Who this is for
+          </h2>
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl border border-line bg-white p-6 md:p-8">
+              <h3 className="font-medium text-ink">Best for</h3>
+              <ul className="mt-5 space-y-3 text-sm text-ink/80 leading-relaxed">
+                {[
+                  "You've got months of wearable data and don't know what it means.",
+                  "Your app says you're fine but you don't feel fine.",
+                  "You're done chasing scores, rings, and badges.",
+                  "You care about sleep, recovery, and training load. Not weight or aesthetics.",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="mt-[3px] h-4 w-4 flex-none text-accent"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M4 10l4 4 8-8" />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-line bg-white p-6 md:p-8">
+              <h3 className="font-medium text-ink">Not for</h3>
+              <ul className="mt-5 space-y-3 text-sm text-ink/80 leading-relaxed">
+                {[
+                  "People wanting ongoing coaching or weekly check-ins. This is one-off.",
+                  "People wanting a number to chase. No scores here.",
+                  "Anyone after medical advice or diagnosis.",
+                  "People who don't track. No data, nothing to read.",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="mt-[3px] h-4 w-4 flex-none text-warn"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 5l10 10M15 5l-10 10" />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Ben */}
+      <section className="border-t border-line bg-white">
         <div className="mx-auto max-w-3xl px-6 py-16">
           <div className="rounded-2xl border border-line bg-white p-8 md:p-10 text-center">
             <h2 className="font-serif text-2xl md:text-3xl tracking-tight">
