@@ -10,6 +10,7 @@ const config: Config = {
         mute: "#6b6b6b",
         line: "#e6e4dd",
         accent: "#1f6b5e",
+        warn: "#a04545",
       },
       fontFamily: {
         serif: ['"Iowan Old Style"', "Charter", "Georgia", "serif"],
