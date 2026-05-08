@@ -23,7 +23,7 @@ const howItWorksVideoId =
   process.env.NEXT_PUBLIC_HOW_IT_WORKS_VIDEO_ID || "JHWEjV330UQ";
 // Count of reads delivered so far. Bump via Vercel env var without a commit.
 const readsDelivered = Number(
-  process.env.NEXT_PUBLIC_READS_DELIVERED || "15",
+  process.env.NEXT_PUBLIC_READS_DELIVERED || "17",
 );
 
 // Apple, Garmin, Strava have logomarks in Simple Icons (via react-icons/si).
@@ -197,6 +197,54 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* FAQ — the questions Ben gets asked before people upload */}
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <h2 className="font-serif text-3xl tracking-tight text-center">
+            Common questions
+          </h2>
+          <dl className="mt-12 space-y-10">
+            <div>
+              <dt className="font-serif text-xl tracking-tight">
+                What happens to my data?
+              </dt>
+              <dd className="mt-3 text-ink/80 leading-relaxed">
+                It goes to private storage I control. I read it once to write
+                your report, then I delete it. Not sold, not shared, not kept.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-serif text-xl tracking-tight">
+                How do I get my data out of my tracker?
+              </dt>
+              <dd className="mt-3 text-ink/80 leading-relaxed">
+                Every tracker has an export. Apple Health, Garmin, Strava,
+                WHOOP, and Oura all let you download a copy in a few taps.
+                Step-by-step instructions for each one are{" "}
+                <Link href="/how-to-export" className="underline">
+                  here
+                </Link>
+                .
+              </dd>
+            </div>
+            <div>
+              <dt className="font-serif text-xl tracking-tight">
+                Why are you doing this?
+              </dt>
+              <dd className="mt-3 text-ink/80 leading-relaxed">
+                While I was playing rugby I had amazing trainers who made
+                sense of my data for me. When I retired I had to learn to
+                read it myself. Once I could see the patterns, training,
+                sleep, and energy all started to make sense. I started doing
+                it for myself, then for a few mates. It&apos;s free because
+                I&apos;d rather more people get something useful from their
+                data.
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
 
       {/* Credibility — who's actually reading your data */}
       <section className="border-t border-line">

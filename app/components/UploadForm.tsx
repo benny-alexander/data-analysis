@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { upload } from "@vercel/blob/client";
@@ -403,14 +404,25 @@ export default function UploadForm() {
           >
             <DropIcon className={isDragging ? "text-accent" : "text-mute"} />
             <p className="mt-5 font-serif text-2xl md:text-3xl tracking-tight">
-              Drop your fitness data here
+              Drop your export here
             </p>
             <p className="mt-3 text-mute">
+              Usually a .zip from Garmin, Strava, WHOOP, Oura, or Apple Health.
+            </p>
+            <p className="mt-2 text-sm text-mute">
               or{" "}
               <span className="underline hidden md:inline">click to choose</span>
               <span className="underline md:hidden">
                 tap to upload from Files
               </span>
+              {" · "}
+              <Link
+                href="/how-to-export"
+                className="underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                not sure how to export?
+              </Link>
             </p>
             <input
               ref={fileInputRef}
