@@ -23,7 +23,7 @@ const howItWorksVideoId =
   process.env.NEXT_PUBLIC_HOW_IT_WORKS_VIDEO_ID || "JHWEjV330UQ";
 // Count of reads delivered so far. Bump via Vercel env var without a commit.
 const readsDelivered = Number(
-  process.env.NEXT_PUBLIC_READS_DELIVERED || "17",
+  process.env.NEXT_PUBLIC_READS_DELIVERED || "22",
 );
 
 // Apple, Garmin, Strava have logomarks in Simple Icons (via react-icons/si).
