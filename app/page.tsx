@@ -23,7 +23,7 @@ const howItWorksVideoId =
   process.env.NEXT_PUBLIC_HOW_IT_WORKS_VIDEO_ID || "JHWEjV330UQ";
 // Count of reads delivered so far. Bump via Vercel env var without a commit.
 const readsDelivered = Number(
-  process.env.NEXT_PUBLIC_READS_DELIVERED || "17",
+  process.env.NEXT_PUBLIC_READS_DELIVERED || "22",
 );
 
 // Apple, Garmin, Strava have logomarks in Simple Icons (via react-icons/si).
@@ -168,8 +168,8 @@ export default function Home() {
           )}
 
           <p className="mt-6 text-center text-sm text-ink/70">
-            AI runs the analysis. {founderName} interprets it and emails you a
-            report within 24 hours.
+            I use Claude to run the initial analysis, then read it and email
+            you a report within 24 hours.
           </p>
         </div>
       </section>
@@ -187,16 +187,72 @@ export default function Home() {
             >
               {readsDelivered}
             </p>
-            <div
-              className="mx-auto mt-10 h-px w-16 bg-line"
-              aria-hidden="true"
-            />
-            <p className="mt-8 font-serif italic text-base md:text-lg text-mute max-w-md mx-auto leading-relaxed">
-              Each one interpreted by {founderName}, not a chatbot.
-            </p>
           </div>
         </section>
       )}
+
+      {/* Who this is for — qualifying filter, sits right under the counter */}
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <h2 className="font-serif text-3xl tracking-tight text-center">
+            Who this is for
+          </h2>
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl border border-line bg-white p-6 md:p-8">
+              <h3 className="font-medium text-ink">Best for</h3>
+              <ul className="mt-5 space-y-3 text-sm text-ink/80 leading-relaxed">
+                {[
+                  "You've got months of wearable data and don't know what it means.",
+                  "Your app says you're fine but you don't feel fine.",
+                  "You care about sleep, recovery, and training load. Not weight or aesthetics.",
+                  "You're done chasing scores, rings, and badges.",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="mt-[3px] h-4 w-4 flex-none text-accent"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M4 10l4 4 8-8" />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-line bg-white p-6 md:p-8">
+              <h3 className="font-medium text-ink">Not for</h3>
+              <ul className="mt-5 space-y-3 text-sm text-ink/80 leading-relaxed">
+                {[
+                  "Anyone after medical advice or diagnosis.",
+                  "People who don't track. No data, nothing to read.",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="mt-[3px] h-4 w-4 flex-none text-warn"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 5l10 10M15 5l-10 10" />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* FAQ — the questions Ben gets asked before people upload */}
       <section className="border-t border-line">
@@ -207,11 +263,23 @@ export default function Home() {
           <dl className="mt-12 space-y-10">
             <div>
               <dt className="font-serif text-xl tracking-tight">
+                Why is {founderName} doing this?
+              </dt>
+              <dd className="mt-3 text-ink/80 leading-relaxed">
+                While {founderName} was playing rugby he had amazing trainers
+                who made sense of his data for him. When he retired he had
+                to learn to read it himself. Once he could see the patterns,
+                training, sleep, and energy all started to make sense. He
+                started doing it for himself, then for a few mates.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-serif text-xl tracking-tight">
                 What happens to my data?
               </dt>
               <dd className="mt-3 text-ink/80 leading-relaxed">
-                It goes to private storage I control. I read it once to write
-                your report, then I delete it. Not sold, not shared, not kept.
+                It stays on my laptop. Once I&rsquo;ve run your report,
+                I&rsquo;ll delete it.
               </dd>
             </div>
             <div>
@@ -226,20 +294,6 @@ export default function Home() {
                   here
                 </Link>
                 .
-              </dd>
-            </div>
-            <div>
-              <dt className="font-serif text-xl tracking-tight">
-                Why are you doing this?
-              </dt>
-              <dd className="mt-3 text-ink/80 leading-relaxed">
-                While I was playing rugby I had amazing trainers who made
-                sense of my data for me. When I retired I had to learn to
-                read it myself. Once I could see the patterns, training,
-                sleep, and energy all started to make sense. I started doing
-                it for myself, then for a few mates. It&apos;s free because
-                I&apos;d rather more people get something useful from their
-                data.
               </dd>
             </div>
           </dl>
@@ -306,71 +360,6 @@ export default function Home() {
                 Something small and specific you can run this week. Not a
                 30-day plan you&rsquo;ll abandon.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Who this is for — qualifying filter before the contact CTA */}
-      <section className="border-t border-line">
-        <div className="mx-auto max-w-3xl px-6 py-16">
-          <h2 className="font-serif text-3xl tracking-tight text-center">
-            Who this is for
-          </h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-line bg-white p-6 md:p-8">
-              <h3 className="font-medium text-ink">Best for</h3>
-              <ul className="mt-5 space-y-3 text-sm text-ink/80 leading-relaxed">
-                {[
-                  "You've got months of wearable data and don't know what it means.",
-                  "Your app says you're fine but you don't feel fine.",
-                  "You're done chasing scores, rings, and badges.",
-                  "You care about sleep, recovery, and training load. Not weight or aesthetics.",
-                ].map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="mt-[3px] h-4 w-4 flex-none text-accent"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M4 10l4 4 8-8" />
-                    </svg>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-2xl border border-line bg-white p-6 md:p-8">
-              <h3 className="font-medium text-ink">Not for</h3>
-              <ul className="mt-5 space-y-3 text-sm text-ink/80 leading-relaxed">
-                {[
-                  "People wanting ongoing coaching or weekly check-ins. This is one-off.",
-                  "People wanting a number to chase. No scores here.",
-                  "Anyone after medical advice or diagnosis.",
-                  "People who don't track. No data, nothing to read.",
-                ].map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="mt-[3px] h-4 w-4 flex-none text-warn"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M5 5l10 10M15 5l-10 10" />
-                    </svg>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>

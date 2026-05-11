@@ -777,14 +777,14 @@ function OversizeBlock({
 
   const explainer =
     reason === "single"
-      ? `The form caps single uploads at 500 MB. If your export is bigger than that, WeTransfer can handle it and I'll read it the same way.`
+      ? `The form caps single uploads at 500 MB. WeTransfer handles bigger files free — send it there and I'll read it the same way.`
       : reason === "total"
-        ? `You've already got ${formatBytes(totalBytes)} queued. Combined with this file (${sizeLabel}) it crosses 1.5 GB. Try sending it in two batches, or use WeTransfer.`
-        : `I only take ${MAX_FILES} files at a time. Remove one first, or send everything via WeTransfer so I can read it together.`;
+        ? `You've already got ${formatBytes(totalBytes)} queued. Combined with this file (${sizeLabel}) it crosses 1.5 GB. Send everything via WeTransfer in one go, or split into two batches here.`
+        : `I only take ${MAX_FILES} files at a time. Send everything via WeTransfer so I can read it together, or remove one and try again.`;
 
   const mailSubject = encodeURIComponent("My data export is too big for the form");
   const mailBody = encodeURIComponent(
-    `Hi Ben,\n\nMy file is too big for the upload form:\n- ${file.name} (${sizeLabel})\n\nI'll send it via WeTransfer (https://wetransfer.com) to this email.\n\nMy goal / what I'm hoping for:\n[tell Ben what you want from the read]\n\nThanks,\n`,
+    `Hi Ben,\n\nMy file is too big for the upload form:\n- ${file.name} (${sizeLabel})\n\nI'll send it via WeTransfer to this email.\n\nMy goal / what I'm hoping for:\n[tell Ben what you want from the read]\n\nThanks,\n`,
   );
   const mailto = `mailto:${CONTACT_EMAIL}?subject=${mailSubject}&body=${mailBody}`;
 
@@ -802,14 +802,23 @@ function OversizeBlock({
 
       <div className="mt-6 space-y-3">
         <a
-          href={mailto}
+          href="https://wetransfer.com"
+          target="_blank"
+          rel="noreferrer"
+          onClick={() =>
+            track("oversize_wetransfer_clicked", {
+              reason,
+              size_mb: +(file.size / 1024 / 1024).toFixed(2),
+            })
+          }
           className="block rounded-lg bg-ink px-5 py-4 text-paper font-medium hover:bg-accent transition"
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div>Send it via WeTransfer instead</div>
+              <div>Send via WeTransfer &rarr;</div>
               <div className="text-xs opacity-70 mt-0.5 font-normal">
-                Free, no account. Send to {CONTACT_EMAIL}.
+                Free, up to 2 GB. Send to {CONTACT_EMAIL} and mention your goal
+                in the message.
               </div>
             </div>
             <span aria-hidden>&rarr;</span>
@@ -823,12 +832,19 @@ function OversizeBlock({
         >
           {reason === "count" ? "Let me remove one instead" : "Try a different file"}
         </button>
+
+        <a
+          href={mailto}
+          className="block text-center text-xs text-mute hover:text-ink underline underline-offset-4"
+        >
+          or email me first if you&rsquo;d rather
+        </a>
       </div>
 
       <p className="mt-6 text-xs text-mute leading-relaxed">
         <strong className="text-ink">Why WeTransfer?</strong> It handles files up to
-        2 GB free. Once your file&rsquo;s on the way, I&rsquo;ll reply to your email
-        and walk you through the rest.
+        2 GB free and you don&rsquo;t need an account. I&rsquo;ll get the email,
+        download your data, and send your read back the same way.
       </p>
     </div>
   );

@@ -209,12 +209,12 @@ function Garmin() {
       <Step n={1}>
         Go to{" "}
         <a
-          href="https://www.garmin.com/account-management/"
+          href="https://www.garmin.com/en-AU/account/datamanagement/exportdata"
           target="_blank"
           rel="noreferrer"
           className="text-accent underline"
         >
-          garmin.com/account-management
+          garmin.com/en-AU/account/datamanagement/exportdata
         </a>{" "}
         and sign in.
       </Step>
