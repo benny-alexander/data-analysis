@@ -204,8 +204,8 @@ export default function Home() {
                 {[
                   "You've got months of wearable data and don't know what it means.",
                   "Your app says you're fine but you don't feel fine.",
-                  "You're done chasing scores, rings, and badges.",
                   "You care about sleep, recovery, and training load. Not weight or aesthetics.",
+                  "You're done chasing scores, rings, and badges.",
                 ].map((item) => (
                   <li key={item} className="flex gap-3">
                     <svg
@@ -229,8 +229,6 @@ export default function Home() {
               <h3 className="font-medium text-ink">Not for</h3>
               <ul className="mt-5 space-y-3 text-sm text-ink/80 leading-relaxed">
                 {[
-                  "People wanting ongoing coaching or weekly check-ins. This is one-off.",
-                  "People wanting a number to chase. No scores here.",
                   "Anyone after medical advice or diagnosis.",
                   "People who don't track. No data, nothing to read.",
                 ].map((item) => (
