@@ -263,6 +263,18 @@ export default function Home() {
           <dl className="mt-12 space-y-10">
             <div>
               <dt className="font-serif text-xl tracking-tight">
+                Why is {founderName} doing this?
+              </dt>
+              <dd className="mt-3 text-ink/80 leading-relaxed">
+                While {founderName} was playing rugby he had amazing trainers
+                who made sense of his data for him. When he retired he had
+                to learn to read it himself. Once he could see the patterns,
+                training, sleep, and energy all started to make sense. He
+                started doing it for himself, then for a few mates.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-serif text-xl tracking-tight">
                 What happens to my data?
               </dt>
               <dd className="mt-3 text-ink/80 leading-relaxed">
@@ -282,20 +294,6 @@ export default function Home() {
                   here
                 </Link>
                 .
-              </dd>
-            </div>
-            <div>
-              <dt className="font-serif text-xl tracking-tight">
-                Why are you doing this?
-              </dt>
-              <dd className="mt-3 text-ink/80 leading-relaxed">
-                While I was playing rugby I had amazing trainers who made
-                sense of my data for me. When I retired I had to learn to
-                read it myself. Once I could see the patterns, training,
-                sleep, and energy all started to make sense. I started doing
-                it for myself, then for a few mates. It&apos;s free because
-                I&apos;d rather more people get something useful from their
-                data.
               </dd>
             </div>
           </dl>
