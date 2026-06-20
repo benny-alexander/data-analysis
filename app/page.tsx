@@ -179,11 +179,11 @@ export default function Home() {
         <section className="border-t border-line">
           <div className="mx-auto max-w-3xl px-6 py-24 md:py-28 text-center">
             <p className="text-[11px] uppercase tracking-[0.32em] text-mute">
-              Reads delivered to date
+              Wearable data analyses completed
             </p>
             <p
               className="mt-8 font-serif text-[8.5rem] md:text-[12rem] leading-[0.85] text-accent reads-counter-rise"
-              aria-label={`${readsDelivered} reads delivered`}
+              aria-label={`${readsDelivered} wearable data analyses completed`}
             >
               {readsDelivered}
             </p>
